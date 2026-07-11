@@ -82,13 +82,30 @@ class ICSetup(QMainWindow):
 
         ic_number = QLabel('IC No.')
         self.ic_number_text = QLineEdit('')
-        self.ic_number_text.setReadOnly(True)
-        self.ic_number_text.setStyleSheet("""
-            QLineEdit {
-                color: white;
-                background-color: grey;
-            }
-        """)
+        
+        conn = sqlite3.connect('ic_master.db')
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+                        select max(ic_no) from ic_master    
+                       ''')
+        
+        number = cursor.fetchone()
+        print(f'the larget number is {number}')
+        if number[0] is None:
+            self.ic_number_text.setText('1000')
+        else:
+            self.ic_number_text.setText(str(number[0]+1))
+        conn.commit()
+        conn.close()
+        
+        # self.ic_number_text.setReadOnly(True)
+        # self.ic_number_text.setStyleSheet("""
+        #     QLineEdit {
+        #         color: white;
+        #         background-color: grey;
+        #     }
+        # """)
 
         ic_name = QLabel('IC Name')
         self.ic_name_text = QLineEdit()
@@ -323,13 +340,13 @@ class ICSetup(QMainWindow):
                             self.data["ic_name"],
                             self.data["role"],
                             self.data["department"],
-                            self.data["bank"],
                             self.data["status"],
+                            self.data["bank"],
 
                             self.data["account_no"],
                             self.data["lei_no"],
-                            self.data["pan_no"],
                             self.data["gst_no"],
+                            self.data["pan_no"],
                             self.data["branch"],
                             self.data["ifsc_code"],
 
