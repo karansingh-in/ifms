@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QGridLayout, QLineEdit, QTextEdit, QComboBox, QPushButton, QDateEdit
 from PyQt5.QtCore import QDate
-import sqlite3
+from utils.lookup import search
 from pages.ic_setup import ICSetup
 
 class MainWindow(QMainWindow):
@@ -26,7 +26,7 @@ class MainWindow(QMainWindow):
                                font-size: 20px;
                                font-family: Arial;
                                color: white;
-                               background-color: blue;
+                               background-color: #0A84FF;
                            }
                            
                            QComboBox {                         
@@ -56,13 +56,20 @@ class MainWindow(QMainWindow):
         dateEdit = QDateEdit()
         dateEdit.setDate(QDate.currentDate())
         
-        SubmitButton = QPushButton('Submit')
-        CancelButton = QPushButton('Cancel')
-        SubmitButton.clicked.connect(self.open_icsetup)
-        lookupbutton = QPushButton('Lookup')
         self.searchbar = QLineEdit()
-        # searchbutton = QPushButton('Search')
-        # searchbutton.clicked.connect(self.search)
+        self.searchbar.setMaximumWidth(280)
+        self.searchbar.setPlaceholderText('Enter IC Number')
+        
+        self.SubmitButton = QPushButton('Submit')
+        self.CancelButton = QPushButton('Cancel')
+        self.SubmitButton.clicked.connect(self.open_icsetup)
+        self.lookupbutton = QPushButton('Lookup')
+        self.lookupbutton.hide()
+        self.searchbar.hide()
+        self.lookupbutton.clicked.connect(self.lookup)
+        
+        self.dropdown2.currentTextChanged.connect(self.show_search)
+        
         
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -76,42 +83,43 @@ class MainWindow(QMainWindow):
         grid.addWidget(dateEdit, 1, 1)
         grid.addWidget(self.dropdown1, 2, 1)
         grid.addWidget(self.dropdown2, 3, 1)
-        grid.addWidget(SubmitButton, 4, 1)
-        grid.addWidget(CancelButton, 4, 2)
-        grid.addWidget(self.searchbar, 5, 2)
-        grid.addWidget(lookupbutton, 5, 3)
+        grid.addWidget(self.searchbar, 4, 1)
+        grid.addWidget(self.SubmitButton, 5, 1)
+        grid.addWidget(self.CancelButton, 5, 2)
+        grid.addWidget(self.lookupbutton, 5, 3)
         
         central_widget.setLayout(grid)
         
+    def show_search(self):
+        function_selection = self.dropdown2.currentText()
+        if function_selection != 'C: Create':
+            self.lookupbutton.show()
+            self.searchbar.show()
+        if function_selection == 'C: Create':
+            self.lookupbutton.hide()
+            self.searchbar.hide()
+                
+    
     def open_icsetup(self):
-       # master_type = self.dropdown1.currentText()
-        function_selection =  self.dropdown2.currentText()
+        function_selection =  self.dropdown2.currentText() 
         
         self.ic_window = ICSetup(function_selection)
         self.ic_window.show()
         
         self.close()
             
-    def search(self):
-        number = self.searchbar.text()
-        self.lookup(number)
-        self.lookup.show()
-
-        self.close()
     
-    def lookup(self, number):
-        conn = sqlite3.connect('ic_master.db')
-        cursor = conn.cursor()
-        
-        cursor.execute(f'''
-                       select * from ic_master where id={number}
-                       ''')
-        
-        row = cursor.fetchone()
-        print(row)
+    def lookup(self):
+        master_type = self.dropdown1.currentText()        
+        self.searchwindow = search()
+        self.searchwindow.show()
+        self.close()
+
     
 def main():
     app = QApplication([])
+    with open("styles/dark.qss", "r") as file:
+        app.setStyleSheet(file.read())
     window = MainWindow()
     window.show()
     sys.exit(app.exec_())

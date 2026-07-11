@@ -5,8 +5,8 @@ cursor = conn.cursor()
 
 cursor.execute('''
                create table ic_master(
-                id integer primary key autoincrement,
-                ic_no text,
+                ic_no integer primary key autoincrement,
+                
                 ic_name text,
                 role text,
                 city text,
@@ -14,7 +14,7 @@ cursor.execute('''
                 bank text,
                 status text,
                 pin_code text,
-                account_no text ,
+                account_no integer ,
                 pan_no text unique,
                 gst_no text ,
                 lei_no text ,
