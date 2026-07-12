@@ -425,10 +425,11 @@ class ICSetup(QMainWindow):
                         designation3,
                         phone3,
                         email3,
-                        datetime
+                        datetime,
+                        action
                         
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ''',
                     (
                         
@@ -466,7 +467,8 @@ class ICSetup(QMainWindow):
                             self.data["designation3"],
                             self.data["phone3"],
                             self.data["email3"],
-                            datetime.datetime.now()
+                            datetime.datetime.now(),
+                            'Create'
                     )
                     )
         conn.commit()
@@ -513,7 +515,10 @@ class ICSetup(QMainWindow):
                         name3=?,
                         designation3=?,
                         phone3=?,
-                        email3=?
+                        email3=?,
+                        datetime=?,
+                        action=?,
+                        
                         
                     
                     where ic_no={self.ic_number_text.text()}
@@ -551,6 +556,8 @@ class ICSetup(QMainWindow):
                     self.designation3dropdown.currentText(),
                     self.phone3_text.text(),
                     self.email3_text.text(),
+                    datetime.datetime.now(),
+                    'Update'
                     )
                     )
                        
