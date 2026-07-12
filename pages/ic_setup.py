@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QLabel, QWidget, QGridLayout, QLineEdit, QComboBox, QPushButton
 import sqlite3
+import datetime
 class ICSetup(QMainWindow):
     def __init__(self, function):
         super().__init__()
@@ -177,9 +178,7 @@ class ICSetup(QMainWindow):
         self.submitbutton_ic = QPushButton("Submit")
         self.cancelbutton = QPushButton("Cancel")
         
-        print(self.function)
         if self.function ==  'E: Enquiry':
-            print('success')
             for i in self.findChildren(QLineEdit):
                 i.setReadOnly(True)
             for i in self.findChildren(QComboBox):
@@ -194,6 +193,13 @@ class ICSetup(QMainWindow):
                                     }''')
             
             self.submitbutton_ic.hide() 
+        elif self.function == 'A: Amend':
+            self.submitbutton_ic.setText('Update')
+            self.submitbutton_ic.clicked.connect(self.update_ic)
+            
+        else:
+            self.submitbutton_ic.clicked.connect(self.insert_ic)
+            
         
         grid.addWidget(heading1, 0, 0, 1, 4)
         grid.addWidget(functionlabel, 1, 0)
@@ -264,10 +270,6 @@ class ICSetup(QMainWindow):
         grid.addWidget(self.cancelbutton, 13, 7)
 
         central_widget.setLayout(grid)
-
-        
-        
-        self.submitbutton_ic.clicked.connect(self.insert_ic)
         
     def insert_ic(self):
         self.data = {
@@ -387,10 +389,174 @@ class ICSetup(QMainWindow):
                             self.data["email3"]
                     )
                     )
+        cursor.execute('''
+                    insert into ic_hist(
+                        ic_no,
+                        ic_name,
+                        role,
+                        department,
+                        bank,
+                        status,
+                        
+                        account_no,
+                        lei_no,
+                        gst_no,
+                        pan_no,
+                        branch,
+                        ifsc_code,
+                        
+                        address1,
+                        address2,
+                        address3,
+                        city,
+                        pin_code,
+                        
+                        name1,
+                        designation1,
+                        phone1,
+                        email1,
+                        
+                        name2,
+                        designation2,
+                        phone2,
+                        email2,
+                        
+                        name3,
+                        designation3,
+                        phone3,
+                        email3,
+                        datetime
+                        
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ''',
+                    (
+                        
+                            self.data["ic_no"],
+                            self.data["ic_name"],
+                            self.data["role"],
+                            self.data["department"],
+                            self.data["status"],
+                            self.data["bank"],
+
+                            self.data["account_no"],
+                            self.data["lei_no"],
+                            self.data["gst_no"],
+                            self.data["pan_no"],
+                            self.data["branch"],
+                            self.data["ifsc_code"],
+
+                            self.data["address1"],
+                            self.data["address2"],
+                            self.data["address3"],
+                            self.data["city"],
+                            self.data["pin_code"],
+
+                            self.data["name1"],
+                            self.data["designation1"],
+                            self.data["phone1"],
+                            self.data["email1"],
+
+                            self.data["name2"],
+                            self.data["designation2"],
+                            self.data["phone2"],
+                            self.data["email2"],
+
+                            self.data["name3"],
+                            self.data["designation3"],
+                            self.data["phone3"],
+                            self.data["email3"],
+                            datetime.datetime.now()
+                    )
+                    )
         conn.commit()
         conn.close()
         
         
+    def update_ic(self):
+        conn = sqlite3.connect('ic_master.db')
 
+        cursor = conn.cursor()
+        
+        cursor.execute(f'''
+                       update ic_hist set 
+                        
+                        ic_name=?,
+                        role=?,
+                        department=?,
+                        bank=?,
+                        status=?,
+                        
+                        account_no=?,
+                        lei_no=?,
+                        gst_no=?,
+                        pan_no=?,
+                        branch=?,
+                        ifsc_code=?,
+                        
+                        address1=?,
+                        address2=?,
+                        address3=?,
+                        city=?,
+                        pin_code=?,
+                        
+                        name1=?,
+                        designation1=?,
+                        phone1=?,
+                        email1=?,
+                        
+                        name2=?,
+                        designation2=?,
+                        phone2=?,
+                        email2=?,
+                        
+                        name3=?,
+                        designation3=?,
+                        phone3=?,
+                        email3=?
+                        
+                    
+                    where ic_no={self.ic_number_text.text()}
+                    ''',(
+                    self.ic_name_text.text(),
+                    self.roledropdown.currentText(),
+                    self.department_text.text(),
+                    self.bank_text.text(),
+                    self.statusdropdown.currentText(),
+
+                    self.account_no_text.text(),
+                    self.lei_no_text.text(),
+                    self.pan_no_text.text(),
+                    self.gst_no_text.text(),
+                    self.branch_text.text(),
+                    self.ifsc_code_text.text(),
+
+                    self.address1_text.text(),
+                    self.address2_text.text(),
+                    self.address3_text.text(),
+                    self.city_text.text(),
+                    self.pin_code_text.text(),
+
+                    self.contact_name1_text.text(),
+                    self.designation1dropdown.currentText(),
+                    self.phone1_text.text(),
+                    self.email1_text.text(),
+
+                    self.contact_name2_text.text(),
+                    self.designation2dropdown.currentText(),
+                    self.phone2_text.text(),
+                    self.email2_text.text(),
+
+                    self.contact_name3_text.text(),
+                    self.designation3dropdown.currentText(),
+                    self.phone3_text.text(),
+                    self.email3_text.text(),
+                    )
+                    )
+                       
+        conn.commit()
+        conn.close()
+                       
+                       
             
         
