@@ -32,7 +32,8 @@ class ICSetup(QMainWindow):
                                font-family: Arial;
                            }
                            """)
-               
+    
+            
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         
@@ -82,6 +83,11 @@ class ICSetup(QMainWindow):
 
         ic_number = QLabel('IC No.')
         self.ic_number_text = QLineEdit('')
+        self.ic_number_text.setReadOnly(True)
+        self.ic_number_text.setStyleSheet('''
+                                           background-color: grey;
+                                          
+                                          ''')
         
         conn = sqlite3.connect('ic_master.db')
         cursor = conn.cursor()
@@ -91,21 +97,12 @@ class ICSetup(QMainWindow):
                        ''')
         
         number = cursor.fetchone()
-        print(f'the larget number is {number}')
         if number[0] is None:
             self.ic_number_text.setText('1000')
         else:
             self.ic_number_text.setText(str(number[0]+1))
         conn.commit()
         conn.close()
-        
-        # self.ic_number_text.setReadOnly(True)
-        # self.ic_number_text.setStyleSheet("""
-        #     QLineEdit {
-        #         color: white;
-        #         background-color: grey;
-        #     }
-        # """)
 
         ic_name = QLabel('IC Name')
         self.ic_name_text = QLineEdit()
@@ -175,9 +172,29 @@ class ICSetup(QMainWindow):
 
         email3 = QLabel("E-Mail ID")
         self.email3_text = QLineEdit()
+        
 
-        submitbutton_ic = QPushButton("Submit")
-        cancelbutton = QPushButton("Cancel")
+        self.submitbutton_ic = QPushButton("Submit")
+        self.cancelbutton = QPushButton("Cancel")
+        
+        print(self.function)
+        if self.function ==  'E: Enquiry':
+            print('success')
+            for i in self.findChildren(QLineEdit):
+                i.setReadOnly(True)
+            for i in self.findChildren(QComboBox):
+                i.setEnabled(False)
+                
+            self.setStyleSheet('''
+                               QLineEdit{
+                                   background-color: grey;
+                                   },
+                                QComboBox{
+                                    background-color: grey;
+                                    }''')
+            
+            self.submitbutton_ic.hide() 
+        
         grid.addWidget(heading1, 0, 0, 1, 4)
         grid.addWidget(functionlabel, 1, 0)
         grid.addWidget(self.function_selection, 1, 1)
@@ -243,16 +260,14 @@ class ICSetup(QMainWindow):
         grid.addWidget(self.email2_text, 11, 7)
         grid.addWidget(email3, 12, 6)
         grid.addWidget(self.email3_text, 12, 7)
-        grid.addWidget(submitbutton_ic, 13, 6)
-        grid.addWidget(cancelbutton, 13, 7)
+        grid.addWidget(self.submitbutton_ic, 13, 6)
+        grid.addWidget(self.cancelbutton, 13, 7)
 
         central_widget.setLayout(grid)
 
         
         
-        submitbutton_ic.clicked.connect(self.insert_ic)
-        
-  
+        self.submitbutton_ic.clicked.connect(self.insert_ic)
         
     def insert_ic(self):
         self.data = {
