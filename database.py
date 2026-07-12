@@ -76,7 +76,8 @@ cursor.execute('''
                 email1 text,
                 email2 text,
                 email3 text,
-                datetime timestamp
+                datetime timestamp,
+                action text
                 )''')
 
 conn.commit()
