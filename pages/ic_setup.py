@@ -491,8 +491,8 @@ class ICSetup(QMainWindow):
                         
                         account_no=?,
                         lei_no=?,
-                        gst_no=?,
                         pan_no=?,
+                        gst_no=?,
                         branch=?,
                         ifsc_code=?,
                         
@@ -517,7 +517,7 @@ class ICSetup(QMainWindow):
                         phone3=?,
                         email3=?,
                         datetime=?,
-                        action=?,
+                        action=?
                         
                         
                     
@@ -560,7 +560,83 @@ class ICSetup(QMainWindow):
                     'Update'
                     )
                     )
-                       
+        cursor.execute(f'''
+                       update ic_master set 
+                        
+                        ic_name=?,
+                        role=?,
+                        department=?,
+                        bank=?,
+                        status=?,
+                        
+                        account_no=?,
+                        lei_no=?,
+                        pan_no=?,
+                        gst_no=?,
+                        branch=?,
+                        ifsc_code=?,
+                        
+                        address1=?,
+                        address2=?,
+                        address3=?,
+                        city=?,
+                        pin_code=?,
+                        
+                        name1=?,
+                        designation1=?,
+                        phone1=?,
+                        email1=?,
+                        
+                        name2=?,
+                        designation2=?,
+                        phone2=?,
+                        email2=?,
+                        
+                        name3=?,
+                        designation3=?,
+                        phone3=?,
+                        email3=?
+                        
+                        
+                    
+                    where ic_no={self.ic_number_text.text()}
+                    ''',(
+                    self.ic_name_text.text(),
+                    self.roledropdown.currentText(),
+                    self.department_text.text(),
+                    self.bank_text.text(),
+                    self.statusdropdown.currentText(),
+
+                    self.account_no_text.text(),
+                    self.lei_no_text.text(),
+                    self.pan_no_text.text(),
+                    self.gst_no_text.text(),
+                    self.branch_text.text(),
+                    self.ifsc_code_text.text(),
+
+                    self.address1_text.text(),
+                    self.address2_text.text(),
+                    self.address3_text.text(),
+                    self.city_text.text(),
+                    self.pin_code_text.text(),
+
+                    self.contact_name1_text.text(),
+                    self.designation1dropdown.currentText(),
+                    self.phone1_text.text(),
+                    self.email1_text.text(),
+
+                    self.contact_name2_text.text(),
+                    self.designation2dropdown.currentText(),
+                    self.phone2_text.text(),
+                    self.email2_text.text(),
+
+                    self.contact_name3_text.text(),
+                    self.designation3dropdown.currentText(),
+                    self.phone3_text.text(),
+                    self.email3_text.text()
+                    )
+                    )
+            
         conn.commit()
         conn.close()
                        
