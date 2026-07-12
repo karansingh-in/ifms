@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QGridLayout, QLineEdit, QTextEdit, QComboBox, QPushButton, QDateEdit
 from PyQt5.QtCore import QDate
 from utils.lookup import search
+from utils.search import search_
 from pages.ic_setup import ICSetup
 
 class MainWindow(QMainWindow):
@@ -62,7 +63,6 @@ class MainWindow(QMainWindow):
         
         self.SubmitButton = QPushButton('Submit')
         self.CancelButton = QPushButton('Cancel')
-        self.SubmitButton.clicked.connect(self.open_icsetup)
         self.lookupbutton = QPushButton('Lookup')
         self.lookupbutton.hide()
         self.searchbar.hide()
@@ -89,19 +89,27 @@ class MainWindow(QMainWindow):
         grid.addWidget(self.lookupbutton, 5, 3)
         
         central_widget.setLayout(grid)
-        
+            
     def show_search(self):
         function_selection = self.dropdown2.currentText()
         if function_selection != 'C: Create':
             self.lookupbutton.show()
             self.searchbar.show()
+            entry = self.searchbar.text()
+            self.SubmitButton.clicked.connect(self.searching)
         if function_selection == 'C: Create':
             self.lookupbutton.hide()
             self.searchbar.hide()
-                
+            self.SubmitButton.clicked.connect(self.open_icsetup)
+        
+    def searching(self):
+        function_selection = self.dropdown2.currentText() 
+        entry = self.searchbar.text()
+        self.search_ic = search_(entry=entry,function=function_selection)
+        self.close()
     
     def open_icsetup(self):
-        function_selection =  self.dropdown2.currentText() 
+        function_selection = self.dropdown2.currentText() 
         
         self.ic_window = ICSetup(function_selection)
         self.ic_window.show()
