@@ -2,11 +2,12 @@ from PyQt5.QtWidgets import QMainWindow, QLabel, QWidget, QGridLayout, QLineEdit
 import sqlite3
 import datetime
 class ICSetup(QMainWindow):
-    def __init__(self, function):
+    def __init__(self, function, role):
         super().__init__()
         self.setWindowTitle('Investor Master')
         self.setGeometry(360, 100, 1500, 900)
         self.function = function
+        self.role = role
         self.initUI()
     
     def initUI(self):
@@ -311,86 +312,9 @@ class ICSetup(QMainWindow):
         conn = sqlite3.connect('ic_master.db')
         cursor = conn.cursor()
         
+        # insert in ic pending
         cursor.execute('''
-                    insert into ic_master(
-                        ic_no,
-                        ic_name,
-                        role,
-                        department,
-                        bank,
-                        status,
-                        
-                        account_no,
-                        lei_no,
-                        gst_no,
-                        pan_no,
-                        branch,
-                        ifsc_code,
-                        
-                        address1,
-                        address2,
-                        address3,
-                        city,
-                        pin_code,
-                        
-                        name1,
-                        designation1,
-                        phone1,
-                        email1,
-                        
-                        name2,
-                        designation2,
-                        phone2,
-                        email2,
-                        
-                        name3,
-                        designation3,
-                        phone3,
-                        email3
-                        
-                    )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    ''',
-                    (
-                        
-                            self.data["ic_no"],
-                            self.data["ic_name"],
-                            self.data["role"],
-                            self.data["department"],
-                            self.data["status"],
-                            self.data["bank"],
-
-                            self.data["account_no"],
-                            self.data["lei_no"],
-                            self.data["gst_no"],
-                            self.data["pan_no"],
-                            self.data["branch"],
-                            self.data["ifsc_code"],
-
-                            self.data["address1"],
-                            self.data["address2"],
-                            self.data["address3"],
-                            self.data["city"],
-                            self.data["pin_code"],
-
-                            self.data["name1"],
-                            self.data["designation1"],
-                            self.data["phone1"],
-                            self.data["email1"],
-
-                            self.data["name2"],
-                            self.data["designation2"],
-                            self.data["phone2"],
-                            self.data["email2"],
-
-                            self.data["name3"],
-                            self.data["designation3"],
-                            self.data["phone3"],
-                            self.data["email3"]
-                    )
-                    )
-        cursor.execute('''
-                    insert into ic_hist(
+                    insert into ic_pending(
                         ic_no,
                         ic_name,
                         role,
@@ -425,11 +349,13 @@ class ICSetup(QMainWindow):
                         designation3,
                         phone3,
                         email3,
-                        datetime,
-                        action
-                        
+                        action,
+                        request_status,
+                        submitted_by,
+                        submitted_at
+                                        
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ''',
                     (
                         
@@ -437,8 +363,8 @@ class ICSetup(QMainWindow):
                             self.data["ic_name"],
                             self.data["role"],
                             self.data["department"],
-                            self.data["status"],
                             self.data["bank"],
+                            self.data["status"],
 
                             self.data["account_no"],
                             self.data["lei_no"],
@@ -467,8 +393,10 @@ class ICSetup(QMainWindow):
                             self.data["designation3"],
                             self.data["phone3"],
                             self.data["email3"],
-                            datetime.datetime.now(),
-                            'Create'
+                            self.function,
+                            'Pending',
+                            self.role,
+                            datetime.datetime.now()
                     )
                     )
         conn.commit()
@@ -480,8 +408,9 @@ class ICSetup(QMainWindow):
 
         cursor = conn.cursor()
         
+        # update ic pending
         cursor.execute(f'''
-                       update ic_hist set 
+                       update ic_pending set 
                         
                         ic_name=?,
                         role=?,
@@ -516,8 +445,9 @@ class ICSetup(QMainWindow):
                         designation3=?,
                         phone3=?,
                         email3=?,
-                        datetime=?,
-                        action=?
+                        action=?,
+                        submitted_by=?,
+                        submitted_at=?
                         
                         
                     
@@ -556,84 +486,9 @@ class ICSetup(QMainWindow):
                     self.designation3dropdown.currentText(),
                     self.phone3_text.text(),
                     self.email3_text.text(),
-                    datetime.datetime.now(),
-                    'Update'
-                    )
-                    )
-        cursor.execute(f'''
-                       update ic_master set 
-                        
-                        ic_name=?,
-                        role=?,
-                        department=?,
-                        bank=?,
-                        status=?,
-                        
-                        account_no=?,
-                        lei_no=?,
-                        pan_no=?,
-                        gst_no=?,
-                        branch=?,
-                        ifsc_code=?,
-                        
-                        address1=?,
-                        address2=?,
-                        address3=?,
-                        city=?,
-                        pin_code=?,
-                        
-                        name1=?,
-                        designation1=?,
-                        phone1=?,
-                        email1=?,
-                        
-                        name2=?,
-                        designation2=?,
-                        phone2=?,
-                        email2=?,
-                        
-                        name3=?,
-                        designation3=?,
-                        phone3=?,
-                        email3=?
-                        
-                        
-                    
-                    where ic_no={self.ic_number_text.text()}
-                    ''',(
-                    self.ic_name_text.text(),
-                    self.roledropdown.currentText(),
-                    self.department_text.text(),
-                    self.bank_text.text(),
-                    self.statusdropdown.currentText(),
-
-                    self.account_no_text.text(),
-                    self.lei_no_text.text(),
-                    self.pan_no_text.text(),
-                    self.gst_no_text.text(),
-                    self.branch_text.text(),
-                    self.ifsc_code_text.text(),
-
-                    self.address1_text.text(),
-                    self.address2_text.text(),
-                    self.address3_text.text(),
-                    self.city_text.text(),
-                    self.pin_code_text.text(),
-
-                    self.contact_name1_text.text(),
-                    self.designation1dropdown.currentText(),
-                    self.phone1_text.text(),
-                    self.email1_text.text(),
-
-                    self.contact_name2_text.text(),
-                    self.designation2dropdown.currentText(),
-                    self.phone2_text.text(),
-                    self.email2_text.text(),
-
-                    self.contact_name3_text.text(),
-                    self.designation3dropdown.currentText(),
-                    self.phone3_text.text(),
-                    self.email3_text.text()
+                    self.function,
+                    self.role,
+                    datetime.datetime.now()
                     )
                     )
             
