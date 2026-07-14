@@ -1,9 +1,9 @@
-import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QGridLayout, QLineEdit, QTextEdit, QComboBox, QPushButton, QDateEdit
-from PyQt5.QtCore import QDate
+from PyQt5.QtWidgets import QMainWindow, QLabel, QWidget, QGridLayout, QLineEdit, QComboBox, QPushButton, QDateEdit
+from PyQt5.QtCore import QDate, Qt
 from utils.lookup import search
 from utils.search import search_
 from pages.ic_setup import ICSetup
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -95,9 +95,9 @@ class MainWindow(QMainWindow):
         
         central_widget.setLayout(grid)
         
-            
         self.SubmitButton.clicked.connect(self.submit)
         self.roleselection.currentTextChanged.connect(self.role_switch)
+        
         
     # switch roles between maker and checker    
     def role_switch(self):
@@ -143,17 +143,18 @@ class MainWindow(QMainWindow):
         self.function = self.dropdown2.currentText()
         if self.function == 'C: Create':
             self.role = self.roleselection.currentText()
-            self.ic_window = ICSetup(self.function, self.role)
+            self.ic_window = ICSetup(function=self.function, role=self.role, parent_window=self)
             self.ic_window.show()
             self.close()
         else:
             entry = self.searchbar.text()
-            self.search_ic = search_(entry=entry,function=self.function)
+            self.role = self.roleselection.currentText()
+            self.search_ic = search_(entry=entry, function=self.function, role=self.role)
             self.close()
             
     
     def lookup(self):
         master_type = self.dropdown1.currentText()        
-        self.searchwindow = search()
+        self.searchwindow = search(self)
         self.searchwindow.show()
         self.close()
