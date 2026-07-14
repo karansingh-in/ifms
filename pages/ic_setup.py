@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QShortcut, QKeySequenceEdit, QLabel, QWidget, QGridLayout, QLineEdit, QComboBox, QPushButton
+from PyQt5.QtWidgets import QMainWindow, QLabel, QWidget, QGridLayout, QLineEdit, QComboBox, QPushButton
 import sqlite3
 import datetime
 from utils.message import message
@@ -98,7 +98,7 @@ class ICSetup(QMainWindow):
         cursor = conn.cursor()
         
         cursor.execute('''
-                        select max(ic_no) from ic_master    
+                        select max(ic_no) from ic_pending 
                        ''')
         
         number = cursor.fetchone()
