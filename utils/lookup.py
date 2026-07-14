@@ -1,6 +1,5 @@
 import sqlite3
-import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QLineEdit, QWidget, QGridLayout, QListWidget, QListWidgetItem
+from PyQt5.QtWidgets import QMainWindow, QPushButton, QLineEdit, QWidget, QGridLayout, QListWidget, QListWidgetItem
 from utils.message import message
 
 class search(QMainWindow):
@@ -29,7 +28,15 @@ class search(QMainWindow):
         grid.addWidget(self.listwidget, 2, 0)
         
         central_widget.setLayout(grid)
+        self.listwidget.itemActivated.connect(self.select_ic)
 
+    def select_ic(self, item):
+        index_of_separation = item.text().index('-')
+        ic_number = item.text()[:index_of_separation - 1]
+        self.parent_window.searchbar.setText(ic_number)
+        self.parent_window.show()
+        self.close()
+        
 
     def closeEvent(self, a0):
         self.parent_window.show()
