@@ -4,10 +4,11 @@ from utils.message import message
 from pages.ic_setup import ICSetup
 
 class search_(QMainWindow):
-    def __init__(self, entry, function):
+    def __init__(self, entry, function, role):
         super().__init__()
         self.entry = entry
         self.function = function
+        self.role = role
         self.see()
 
     def see(self):
@@ -26,7 +27,7 @@ class search_(QMainWindow):
             self.msg.show()
             self.close()
         else:
-            self.ic_window = ICSetup(self.function)
+            self.ic_window = ICSetup(function=self.function, role=self.role, parent_window=self )
             self.ic_window.ic_number_text.setText(str(row["ic_no"]))
             self.ic_window.ic_name_text.setText(row["ic_name"])
             self.ic_window.roledropdown.setCurrentText(row["role"])
