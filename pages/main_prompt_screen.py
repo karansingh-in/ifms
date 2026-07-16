@@ -1,9 +1,10 @@
 from PyQt5.QtWidgets import QMainWindow, QLabel, QWidget, QGridLayout, QLineEdit, QComboBox, QPushButton, QDateEdit
-from PyQt5.QtCore import QDate, Qt
+from PyQt5.QtCore import QDate
 from utils.lookup import search
 from utils.search import search_
 from pages.ic_setup import ICSetup
-
+from utils.pending import pending_queue
+from utils.rejections import rejection_queue
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -61,12 +62,16 @@ class MainWindow(QMainWindow):
         self.searchbar.setMaximumWidth(280)
         self.searchbar.setPlaceholderText('Enter IC Number')
         
+        
         self.SubmitButton = QPushButton('Submit')
         self.CancelButton = QPushButton('Cancel')
+        self.rejectedreq = QPushButton('Rejected')
+        self.rejectedreq.setStyleSheet('background-color: #9C2007;')
         self.roleselection = QComboBox(self)
         role_options = ['Maker', 'Checker']
         self.roleselection.addItems(role_options)
         self.queue = QPushButton('Pending')
+        self.queue.clicked.connect(self.show_queue)
         self.lookupbutton = QPushButton('Lookup')
         self.lookupbutton.hide()
         self.searchbar.hide()
@@ -82,6 +87,7 @@ class MainWindow(QMainWindow):
         grid.addWidget(label, 0, 0)
         grid.addWidget(self.roleselection, 1, 2)
         grid.addWidget(self.queue, 2, 2)
+        grid.addWidget(self.rejectedreq, 3, 2)
         grid.addWidget(self.label1, 1, 0)
         grid.addWidget(self.label2, 2, 0)
         grid.addWidget(self.label3, 3, 0)
@@ -95,6 +101,7 @@ class MainWindow(QMainWindow):
         
         central_widget.setLayout(grid)
         
+        self.rejectedreq.clicked.connect(self.show_rejections)
         self.SubmitButton.clicked.connect(self.submit)
         self.roleselection.currentTextChanged.connect(self.role_switch)
         
@@ -138,6 +145,19 @@ class MainWindow(QMainWindow):
             self.searchbar.hide()
           #  self.SubmitButton.clicked.connect(self.open_icsetup)
         
+    # show rejected requests
+    def show_rejections(self):
+        print('clicked')
+        self.rej = rejection_queue(parent_window=self)
+        self.rej.show()
+        self.close()
+    
+    # showing pending requests
+    def show_queue(self):
+        self.role = self.roleselection.currentText()
+        self.p = pending_queue(parent_window=self, role=self.roleselection.currentText())
+        self.p.show()
+        self.close()
     # different operations on submit button
     def submit(self):
         self.function = self.dropdown2.currentText()
