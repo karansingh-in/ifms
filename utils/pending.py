@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, QListWidget, QWidget, QLabel, QListWidg
 from pages.ic_setup import ICSetup
 from utils.message import message
 import datetime
+from utils.feedback import feedback
 
 class pending_queue(QMainWindow):
     def __init__(self, role, parent_window):
@@ -20,7 +21,7 @@ class pending_queue(QMainWindow):
         cursor = conn.cursor()
         
         cursor.execute('''
-                       select request_id, ic_no, ic_name, action, submitted_by, submitted_at from ic_pending
+                       select request_status, request_id, ic_no, ic_name, action, submitted_by, submitted_at from ic_pending
                        ''')
 
         self.queue = cursor.fetchall()
@@ -28,8 +29,9 @@ class pending_queue(QMainWindow):
         self.listwidget = QListWidget()
         
         for q in self.queue:
-            item = QListWidgetItem(f'{q['request_id']} - {q['ic_no']} - {q['ic_name']} - {q['action']}')
-            self.listwidget.addItem(item)
+            if q['request_status'] != 'Rejected':
+                item = QListWidgetItem(f'{q['request_id']} - {q['ic_no']} - {q['ic_name']} - {q['action']}')
+                self.listwidget.addItem(item)
         
         grid = QGridLayout()
         
@@ -143,19 +145,6 @@ class pending_queue(QMainWindow):
                     )
                     )
 
-    def insert_(self):
-        conn = sqlite3.connect('ic_master.db')
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        
-        
-        
-        cursor.execute(f'''
-                       select * from ic_pending where ic_no=?
-                        ''', (self.ic_number, ))
-
-        row = cursor.fetchone()
-        self.insert_ic()
     
     def open_ic(self, item):
         index_of_separation = item.text().rfind('-')
@@ -218,10 +207,11 @@ class pending_queue(QMainWindow):
             self.ic_window.email2_text.setText(row["email2"])
             self.ic_window.email3_text.setText(row["email3"])
             self.ic_window.submitbutton_ic.setText('Approve')
-            self.ic_window.submitbutton_ic.clicked.connect(self.insert_)
+            self.ic_window.submitbutton_ic.clicked.connect(self.insert_ic)
             self.ic_window.cancelbutton.setText('Reject')
             self.ic_window.cancelbutton.setMaximumWidth(140)
-            self.ic_window.cancelbutton.setStyleSheet('background-color: red;')
+            self.ic_window.cancelbutton.setStyleSheet('background-color: #9C2007;')
+            self.ic_window.cancelbutton.clicked.connect(self.give_feedback)
             for i in self.findChildren(QLineEdit):
                 i.setReadOnly(True)
             for i in self.findChildren(QComboBox):
@@ -238,24 +228,11 @@ class pending_queue(QMainWindow):
             self.ic_window.show()
             self.close()
 
-
+    def give_feedback(self):
+        self.f = feedback(parent_window=self, ic_number=self.ic_number, role=self.role)
+        self.f.show()
+        self.close()
         
-        # self.ic_window = ICSetup(parent_window=self, function=self.function, role = self.role)
-        # self.ic_window.show()
-        # self.close()
-        
-    # def closeEvent(self, a0):
-    #     self.parent_window.show()
-    #     self.close()
-    #     return super().closeEvent(a0)
-        
-        
-        
-# app = QApplication([])
-# window = pending_queue()
-# window.show()
-# sys.exit(app.exec_())
-
 
 
 
