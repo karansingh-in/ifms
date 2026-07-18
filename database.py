@@ -3,6 +3,7 @@ import sqlite3
 conn = sqlite3.connect('ic_master.db')
 cursor = conn.cursor()
 
+# ic master
 cursor.execute('''
                create table if not exists ic_master(
                 id integer primary key autoincrement,
@@ -41,6 +42,7 @@ cursor.execute('''
                )
                ''')
 
+# ic history
 cursor.execute('''
                create table if not exists ic_hist(
                 id integer primary key autoincrement,
@@ -84,6 +86,7 @@ cursor.execute('''
                 reviewed_at timestamp
                 )''')
 
+# ic pending
 cursor.execute('''
                create table if not exists ic_pending(
                 ic_no integer,
@@ -96,7 +99,7 @@ cursor.execute('''
                 account_no integer ,
                 lei_no text ,
                 gst_no text ,
-                pan_no text unique,
+                pan_no text ,
                 branch text,
                 ifsc_code text ,
 
@@ -128,6 +131,19 @@ cursor.execute('''
                 feedback text
                 )''')
 
+# users
+cursor.execute('''
+               create table if not exists users(
+                   id integer primary key autoincrement,
+                   username UNIQUE,
+                   password_hash text,
+                   full_name text,
+                   email text unique,
+                   role text,
+                   created_at datetime,
+                   phone_number text
+               )
+               ''')
 
 conn.commit()
 conn.close()
