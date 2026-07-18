@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QWidget, QGridLayout
+from PyQt5.QtWidgets import QMainWindow, QPushButton, QLabel, QLineEdit, QWidget, QGridLayout
 from PyQt5.QtCore import Qt
-
+from pages.registration import registration_screen
 class login_screen(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -13,6 +13,15 @@ class login_screen(QMainWindow):
         password_label = QLabel('Password :')
         self.username_text = QLineEdit()
         self.password_text = QLineEdit()
+        show_password_button = QPushButton('👀')
+        show_password_button.clicked.connect(self.toggle_password)
+        show_password_button.setMaximumWidth(50)
+        show_password_button.setStyleSheet('''
+                                    QPushButton{
+                                        color: #8C8C8C;
+                                        background-color: #161616;
+                                    }
+                                    ''')
         
         self.username_text.setPlaceholderText('username')
         self.password_text.setPlaceholderText('password')
@@ -49,6 +58,7 @@ class login_screen(QMainWindow):
         grid.addWidget(self.password_text, 2, 1)
         grid.addWidget(self.login_button, 3, 1)
         grid.addWidget(self.register_button, 4, 1)
+        grid.addWidget(show_password_button, 2,2)
         
         grid.setSpacing(3)
         grid.setContentsMargins(90,90,90,90)
@@ -56,5 +66,14 @@ class login_screen(QMainWindow):
         central_widget.setLayout(grid)
         
     def registration(self):
-        print('works')
+        self.reg = registration_screen()
+        self.reg.show()
+        self.close()
         
+        
+    def toggle_password(self):
+        if self.password_text.echoMode() == QLineEdit.Password :
+            self.password_text.setEchoMode(QLineEdit.Normal)
+        else:
+            self.password_text.setEchoMode(QLineEdit.Password)
+            
