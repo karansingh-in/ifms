@@ -1,6 +1,11 @@
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QLabel, QLineEdit, QWidget, QGridLayout
 from PyQt5.QtCore import Qt
 from pages.registration import registration_screen
+import sqlite3
+import bcrypt
+from utils.message import message
+from pages.main_prompt_screen import MainWindow
+
 class login_screen(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -32,6 +37,7 @@ class login_screen(QMainWindow):
         
         self.login_button = QPushButton('Login')
         self.login_button.setMaximumWidth(100)
+        self.login_button.clicked.connect(self.check_login)
         
         self.register_button = QPushButton('New User? Register here.')
         self.register_button.setFlat(True)
@@ -70,10 +76,43 @@ class login_screen(QMainWindow):
         self.reg.show()
         self.close()
         
-        
     def toggle_password(self):
         if self.password_text.echoMode() == QLineEdit.Password :
             self.password_text.setEchoMode(QLineEdit.Normal)
         else:
             self.password_text.setEchoMode(QLineEdit.Password)
             
+    def check_login(self):
+        
+        conn = sqlite3.connect('ifms.db')
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+                       select password_hash from users where username = ?
+                       
+                       ''', (self.username_text.text(), ))
+        conn.commit()
+        
+        row = cursor.fetchone()
+        
+        entered_password = self.password_text.text()
+        entered_password = entered_password.encode('utf-8')
+        
+        if row is None:
+             self.msg = message('The user does not exist')
+             self.msg.setWindowTitle('Error!')
+             self.msg.show()
+             #self.close()
+        else:
+            hased_password = row[0].encode('utf-8')
+            if(bcrypt.checkpw(password=entered_password, hashed_password=hased_password)):
+                # self.main_screen = MainWindow()
+                # self.main_screen.show()
+                # self.close()
+
+                print('it works')
+                
+        conn.close()
+        
+        
+        

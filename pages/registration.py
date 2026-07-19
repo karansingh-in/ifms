@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QLabel, QLineEdit, QWidget, QGridLayout, QComboBox
 import datetime
 import sqlite3
-
+import bcrypt
 class registration_screen(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -63,8 +63,13 @@ class registration_screen(QMainWindow):
         central_widget.setLayout(grid)
         
     def insert_user(self):
-        conn = sqlite3.connect('ic_master.db')
+        conn = sqlite3.connect('ifms.db')
         cursor = conn.cursor()
+        
+        encoded_password = self.password_text.text().encode('utf-8')
+        hased_password = bcrypt.hashpw(password=encoded_password, salt=bcrypt.gensalt(rounds=12))   
+        
+        decoded_hash = hased_password.decode('utf-8')     
         
         cursor.execute('''
                        insert into users(
@@ -78,7 +83,7 @@ class registration_screen(QMainWindow):
                        )VALUES(?,?,?,?,?,?,?)
                        ''', (
                            self.username_text.text(),
-                           self.password_text.text(),
+                           decoded_hash,
                            self.name_text.text(),
                            self.email_text.text(),
                            self.role_dropdown.currentText(),
