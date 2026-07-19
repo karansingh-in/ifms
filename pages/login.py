@@ -95,6 +95,13 @@ class login_screen(QMainWindow):
         
         row = cursor.fetchone()
         
+        cursor.execute('''
+                       select role from users where username = ?
+                       ''', (self.username_text.text(), ))
+        
+        self.roles = cursor.fetchone()
+        self.role = self.roles[0]
+        
         entered_password = self.password_text.text()
         entered_password = entered_password.encode('utf-8')
         
@@ -102,13 +109,13 @@ class login_screen(QMainWindow):
              self.msg = message('The user does not exist')
              self.msg.setWindowTitle('Error!')
              self.msg.show()
-             #self.close()
+             self.close()
         else:
             hased_password = row[0].encode('utf-8')
             if(bcrypt.checkpw(password=entered_password, hashed_password=hased_password)):
-                # self.main_screen = MainWindow()
-                # self.main_screen.show()
-                # self.close()
+                self.main_screen = MainWindow(role=self.role)
+                self.main_screen.show()
+                self.close()
 
                 print('it works')
                 

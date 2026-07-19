@@ -1,6 +1,6 @@
 import sqlite3
 
-conn = sqlite3.connect('ic_master.db')
+conn = sqlite3.connect('ifms.db')
 cursor = conn.cursor()
 
 # ic master
@@ -38,7 +38,9 @@ cursor.execute('''
                 phone3 text,
                 email1 text,
                 email2 text,
-                email3 text
+                email3 text,
+                cgl1 integer,
+                cgl2 integer
                )
                ''')
 

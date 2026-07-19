@@ -7,10 +7,11 @@ from utils.pending import pending_queue
 from utils.rejections import rejection_queue
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, role):
         super().__init__()
         self.setWindowTitle("IC Master")
         self.setGeometry(550, 250, 900, 500)
+        self.role = role
         self.initUI()
                 
     def initUI(self):
@@ -65,11 +66,8 @@ class MainWindow(QMainWindow):
         
         self.SubmitButton = QPushButton('Submit')
         self.CancelButton = QPushButton('Cancel')
-        self.rejectedreq = QPushButton('Rejected')
-        self.rejectedreq.setStyleSheet('background-color: #9C2007;')
-        self.roleselection = QComboBox(self)
-        role_options = ['Maker', 'Checker']
-        self.roleselection.addItems(role_options)
+        self.ShowRejectionsButton = QPushButton('Rejected')
+        self.ShowRejectionsButton.setStyleSheet('background-color: #9C2007;')
         self.queue = QPushButton('Pending')
         self.queue.clicked.connect(self.show_queue)
         self.lookupbutton = QPushButton('Lookup')
@@ -85,9 +83,8 @@ class MainWindow(QMainWindow):
         grid = QGridLayout()
         
         grid.addWidget(label, 0, 0)
-        grid.addWidget(self.roleselection, 1, 2)
         grid.addWidget(self.queue, 2, 2)
-        grid.addWidget(self.rejectedreq, 3, 2)
+        grid.addWidget(self.ShowRejectionsButton, 3, 2)
         grid.addWidget(self.label1, 1, 0)
         grid.addWidget(self.label2, 2, 0)
         grid.addWidget(self.label3, 3, 0)
@@ -99,16 +96,16 @@ class MainWindow(QMainWindow):
         grid.addWidget(self.CancelButton, 5, 2)
         grid.addWidget(self.lookupbutton, 5, 3)
         
+        self.role_switch()
+        
         central_widget.setLayout(grid)
         
-        self.rejectedreq.clicked.connect(self.show_rejections)
+        self.ShowRejectionsButton.clicked.connect(self.show_rejections)
         self.SubmitButton.clicked.connect(self.submit)
-        self.roleselection.currentTextChanged.connect(self.role_switch)
         
         
     # switch roles between maker and checker    
     def role_switch(self):
-        self.role = self.roleselection.currentText()
         if self.role == 'Checker':
             self.label1.hide()
             self.label2.hide()
@@ -119,6 +116,7 @@ class MainWindow(QMainWindow):
             self.searchbar.hide()
             self.SubmitButton.hide()
             self.CancelButton.hide()
+            self.ShowRejectionsButton.hide()
             self.lookupbutton.show()
         else:
             self.label1.show()
@@ -131,6 +129,7 @@ class MainWindow(QMainWindow):
             self.SubmitButton.show()
             self.CancelButton.show()
             self.lookupbutton.hide()
+            self.ShowRejectionsButton.show()
             
     # show the searchbar
     def show_search(self):
@@ -138,12 +137,9 @@ class MainWindow(QMainWindow):
         if function_selection != 'C: Create':
             self.lookupbutton.show()
             self.searchbar.show()
-         #  entry = self.searchbar.text()
-         #   self.SubmitButton.clicked.connect(self.searching)
         else:
             self.lookupbutton.hide()
             self.searchbar.hide()
-          #  self.SubmitButton.clicked.connect(self.open_icsetup)
         
     # show rejected requests
     def show_rejections(self):
@@ -154,21 +150,18 @@ class MainWindow(QMainWindow):
     
     # showing pending requests
     def show_queue(self):
-        self.role = self.roleselection.currentText()
-        self.p = pending_queue(parent_window=self, role=self.roleselection.currentText())
+        self.p = pending_queue(parent_window=self, role=self.role)
         self.p.show()
         self.close()
     # different operations on submit button
     def submit(self):
         self.function = self.dropdown2.currentText()
         if self.function == 'C: Create':
-            self.role = self.roleselection.currentText()
             self.ic_window = ICSetup(function=self.function, role=self.role, parent_window=self)
             self.ic_window.show()
             self.close()
         else:
             entry = self.searchbar.text()
-            self.role = self.roleselection.currentText()
             self.search_ic = search_(entry=entry, function=self.function, role=self.role)
             self.close()
             
