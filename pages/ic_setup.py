@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QLabel, QWidget, QGridLayout, QLineEdit, QComboBox, QPushButton
+from PyQt5.QtWidgets import QMainWindow, QLabel, QWidget, QGridLayout, QLineEdit, QTextEdit, QComboBox, QPushButton
 import sqlite3
 import datetime
 from utils.message import message
@@ -94,7 +94,7 @@ class ICSetup(QMainWindow):
                                           
                                           ''')
         
-        conn = sqlite3.connect('ic_master.db')
+        conn = sqlite3.connect('ifms.db')
         cursor = conn.cursor()
         
         cursor.execute('''
@@ -178,7 +178,6 @@ class ICSetup(QMainWindow):
         email3 = QLabel("E-Mail ID")
         self.email3_text = QLineEdit()
         
-
         self.submitbutton_ic = QPushButton("Submit")
         self.cancelbutton = QPushButton("Cancel")
         
@@ -317,7 +316,8 @@ class ICSetup(QMainWindow):
             "phone3": self.phone3_text.text(),
             "email3": self.email3_text.text(),
         }
-        conn = sqlite3.connect('ic_master.db')
+        
+        conn = sqlite3.connect('ifms.db')
         cursor = conn.cursor()
         
         # insert in ic pending
@@ -410,18 +410,18 @@ class ICSetup(QMainWindow):
                         )
             conn.commit()
             self.msg = message('✔️ Data has been submitted.')
+            self.msg.okbutton.clicked.connect(self.close)
             self.msg.show()
-            self.close()
-        except :
-            self.msg = message('❌ An error occured')
+        except Exception as e:
+            self.msg = message(f'❌ An error occured: {e}')
+            self.msg.okbutton.clicked.connect(self.close)
             self.msg.show()
+        finally:
+            conn.close()
             self.close()
-        conn.close()
-
-        
         
     def update_ic(self):
-        conn = sqlite3.connect('ic_master.db')
+        conn = sqlite3.connect('ifms.db')
 
         cursor = conn.cursor()
         
@@ -464,7 +464,8 @@ class ICSetup(QMainWindow):
                         email3=?,
                         action=?,
                         submitted_by=?,
-                        submitted_at=?
+                        submitted_at=?,
+                        request_status=?
                         
                         
                     
@@ -505,13 +506,10 @@ class ICSetup(QMainWindow):
                     self.email3_text.text(),
                     self.function,
                     self.role,
-                    datetime.datetime.now()
-                    )
-                    )
+                    datetime.datetime.now(),
+                    'Pending'
+                    ))
             
         conn.commit()
         conn.close()
-                       
-                       
-            
         
