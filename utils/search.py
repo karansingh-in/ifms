@@ -12,7 +12,7 @@ class search_(QMainWindow):
         self.see()
 
     def see(self):
-        conn = sqlite3.connect('ic_master.db')
+        conn = sqlite3.connect('ifms.db')
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 

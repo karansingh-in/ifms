@@ -16,7 +16,7 @@ class pending_queue(QMainWindow):
         
     def initUI(self):
         
-        conn = sqlite3.connect('ic_master.db')
+        conn = sqlite3.connect('ifms.db')
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -50,7 +50,7 @@ class pending_queue(QMainWindow):
             item = self.listwidget.itemActivated.connect(self.open_ic)
         
     def insert_ic(self, submitted_name, submitted_time):
-        conn = sqlite3.connect('ic_master.db')
+        conn = sqlite3.connect('ifms.db')
         self.submitted_name = submitted_name
         self.submitted_time = submitted_time
         cursor = conn.cursor()
@@ -150,7 +150,7 @@ class pending_queue(QMainWindow):
         index_of_separation = item.text().rfind('-')
         self.function = item.text()[index_of_separation + 1:]
         
-        conn = sqlite3.connect('ic_master.db')
+        conn = sqlite3.connect('ifms.db')
         conn.row_factory = sqlite3.Row
 
         self.index_of_first_dash = item.text().index('-')

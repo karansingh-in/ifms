@@ -30,7 +30,7 @@ class feedback(QMainWindow):
         central_widget.setLayout(grid)
 
     def insert_master(self):
-        conn = sqlite3.connect('ic_master.db')
+        conn = sqlite3.connect('ifms.db')
         cursor = conn.cursor()
         
         self.entry = self.textbox.toPlainText()

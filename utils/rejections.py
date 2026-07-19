@@ -13,7 +13,7 @@ class rejection_queue(QMainWindow):
         self.initUI()
         
     def initUI(self):
-        conn = sqlite3.connect('ic_master.db')
+        conn = sqlite3.connect('ifms.db')
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -46,7 +46,7 @@ class rejection_queue(QMainWindow):
     
       # updating the values for resubmission
     def update_ic(self):
-        conn = sqlite3.connect('ic_master.db')
+        conn = sqlite3.connect('ifms.db')
 
         cursor = conn.cursor()
         
@@ -139,7 +139,7 @@ class rejection_queue(QMainWindow):
         index_of_separation = item.text().rfind('-')
         self.function = item.text()[index_of_separation + 1:]
         
-        conn = sqlite3.connect('ic_master.db')
+        conn = sqlite3.connect('ifms.db')
         conn.row_factory = sqlite3.Row
 
         self.index_of_first_dash = item.text().index('-')
@@ -216,7 +216,7 @@ class rejection_queue(QMainWindow):
         index_of_separation = item.text().rfind('-')
         self.function = item.text()[index_of_separation + 1:]
         
-        conn = sqlite3.connect('ic_master.db')
+        conn = sqlite3.connect('ifms.db')
         conn.row_factory = sqlite3.Row
 
         self.index_of_dash = item.text().index('-')
