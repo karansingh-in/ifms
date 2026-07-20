@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QLabel, QWidget, QGridLayout, QLineEdit, QComboBox, QPushButton, QDateEdit
+from PyQt5.QtWidgets import QLabel, QWidget, QGridLayout, QLineEdit, QComboBox, QPushButton, QDateEdit
 from PyQt5.QtCore import QDate
 from utils.lookup import search
 from utils.search import search_
@@ -6,11 +6,9 @@ from pages.ic_setup import ICSetup
 from utils.pending import pending_queue
 from utils.rejections import rejection_queue
 
-class MainWindow(QMainWindow):
+class MainWindow(QWidget):
     def __init__(self, role):
         super().__init__()
-        self.setWindowTitle("IC Master")
-        self.setGeometry(550, 250, 900, 500)
         self.role = role
         self.initUI()
                 
@@ -77,8 +75,6 @@ class MainWindow(QMainWindow):
         
         self.dropdown2.currentTextChanged.connect(self.show_search)
         
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
         
         grid = QGridLayout()
         
@@ -98,7 +94,9 @@ class MainWindow(QMainWindow):
         
         self.role_switch()
         
-        central_widget.setLayout(grid)
+        grid.setContentsMargins(200,200,200,200)
+        
+        self.setLayout(grid)
         
         self.ShowRejectionsButton.clicked.connect(self.show_rejections)
         self.SubmitButton.clicked.connect(self.submit)
@@ -144,30 +142,30 @@ class MainWindow(QMainWindow):
     # show rejected requests
     def show_rejections(self):
         print('clicked')
-        self.rej = rejection_queue(parent_window=self)
+        self.rej = rejection_queue(main_window=self)
         self.rej.show()
-        self.close()
+        # self.close()
     
     # showing pending requests
     def show_queue(self):
-        self.p = pending_queue(parent_window=self, role=self.role)
+        self.p = pending_queue(main_window=self, role=self.role)
         self.p.show()
-        self.close()
+        # self.close()
     # different operations on submit button
     def submit(self):
         self.function = self.dropdown2.currentText()
         if self.function == 'C: Create':
-            self.ic_window = ICSetup(function=self.function, role=self.role, parent_window=self)
-            self.ic_window.show()
-            self.close()
+            self.ic_window = ICSetup(function=self.function, role=self.role, main_window=self)
+            # self.ic_window.show()
+            # self.close()
         else:
             entry = self.searchbar.text()
             self.search_ic = search_(entry=entry, function=self.function, role=self.role)
-            self.close()
+            # self.close()
             
     
     def lookup(self):
         master_type = self.dropdown1.currentText()        
         self.searchwindow = search(self)
-        self.searchwindow.show()
-        self.close()
+        # self.searchwindow.show()
+        # self.close()

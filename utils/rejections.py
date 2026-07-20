@@ -1,15 +1,13 @@
 import sqlite3
-from PyQt5.QtWidgets import QMainWindow, QListWidget, QWidget, QLabel, QListWidgetItem, QGridLayout
+from PyQt5.QtWidgets import QListWidget, QWidget, QLabel, QListWidgetItem, QGridLayout
 from utils.message import message
 from pages.ic_setup import ICSetup
 import datetime
 
-class rejection_queue(QMainWindow):
-    def __init__(self, parent_window):
+class rejection_queue(QWidget):
+    def __init__(self, main_window):
         super().__init__()
-        self.setWindowTitle('Pending Queue')
-        self.setGeometry(660, 380, 700, 450)
-        self.parent_window = parent_window
+        self.main_window = main_window
         self.initUI()
         
     def initUI(self):
@@ -37,10 +35,7 @@ class rejection_queue(QMainWindow):
         grid.addWidget(self.label, 0, 0)
         grid.addWidget(self.listwidget, 1, 0)
         
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        
-        central_widget.setLayout(grid)
+        self.setLayout(grid)
             
         item = self.listwidget.itemActivated.connect(self.show_feedback)                 
     
@@ -161,10 +156,10 @@ class rejection_queue(QMainWindow):
         if row is None:
             self.msg = message('Entry not found')
             self.msg.show()
-            self.close()
+            # self.close()
         else:
             print(row)
-            self.ic_window = ICSetup(function=self.function, role=self.role, parent_window=self)
+            self.ic_window = ICSetup(function=self.function, role=self.role, main_window=self)
             self.ic_window.ic_number_text.setText(str(row["ic_no"]))
             self.ic_window.ic_name_text.setText(row["ic_name"])
             self.ic_window.roledropdown.setCurrentText(row["role"])
@@ -209,7 +204,7 @@ class rejection_queue(QMainWindow):
         
             self.ic_window.show()
             self.msg.close()
-            self.close()
+            # self.close()
 
     # showing rejection feedback
     def show_feedback(self, item):
@@ -232,7 +227,7 @@ class rejection_queue(QMainWindow):
         
         self.feedback_text = cursor.fetchone()["feedback"]
         print(self.feedback_text)
-        self.parent_window.show()
+        self.main_window.show()
 
         self.msg = message(text=self.feedback_text)
         self.msg.setWindowTitle('Feedback')
@@ -240,11 +235,11 @@ class rejection_queue(QMainWindow):
         self.msg.okbutton.setText('Modify')
         self.msg.okbutton.clicked.connect(lambda: self.open_ic(item))
         self.msg.show()
-        self.close()
+        # self.close()
     
     # open the parent window to closing the current one
     def closeEvent(self, a0):
-        self.parent_window.show()
+        self.main_window.show()
         return super().closeEvent(a0)
         
         
