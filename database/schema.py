@@ -137,15 +137,39 @@ cursor.execute('''
 cursor.execute('''
                create table if not exists users(
                    id integer primary key autoincrement,
-                   username UNIQUE,
+                   username text UNIQUE,
                    password_hash text,
                    full_name text,
                    email text unique,
                    role text,
                    created_at datetime,
-                   phone_number text
+                   phone_number text,
+                   status TEXT NOT NULL DEFAULT 'ACTIVE'
                )
                ''')
+
+# permissions
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS permissions (
+    permission_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    permission_name TEXT NOT NULL UNIQUE,
+    module TEXT NOT NULL
+)
+""")
+
+# user permissions
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS user_permissions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    permission_id INTEGER NOT NULL,
+
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (permission_id) REFERENCES permissions(permission_id),
+
+    UNIQUE(user_id, permission_id)
+)
+""")
 
 conn.commit()
 conn.close()
