@@ -1,13 +1,11 @@
 import sqlite3
-from PyQt5.QtWidgets import QMainWindow, QPushButton, QLineEdit, QWidget, QGridLayout, QListWidget, QListWidgetItem
+from PyQt5.QtWidgets import QPushButton, QLineEdit, QWidget, QGridLayout, QListWidget, QListWidgetItem
 from utils.message import message
 
-class search(QMainWindow):
-    def __init__(self, parent_window):
+class search(QWidget):
+    def __init__(self, main_window):
         super().__init__()
-        self.setWindowTitle('Lookup')
-        self.setGeometry(660, 380, 700, 450)
-        self.parent_window = parent_window
+        self.main_window = main_window
         self.initUI()
 
     def initUI(self):
@@ -15,9 +13,6 @@ class search(QMainWindow):
         self.searchbar.setPlaceholderText('Enter the  IC Name')
         searchbutton = QPushButton('Search')
         searchbutton.clicked.connect(self.see)
-
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
 
         grid = QGridLayout()
         
@@ -27,24 +22,24 @@ class search(QMainWindow):
         grid.addWidget(searchbutton, 1, 0)
         grid.addWidget(self.listwidget, 2, 0)
         
-        central_widget.setLayout(grid)
+        self.setLayout(grid)
         self.listwidget.itemActivated.connect(self.select_ic)
 
     def select_ic(self, item):
         index_of_separation = item.text().index('-')
         ic_number = item.text()[:index_of_separation - 1]
-        self.parent_window.searchbar.setText(ic_number)
-        self.parent_window.show()
-        self.close()
+        self.main_window.searchbar.setText(ic_number)
+        # self.main_window.show()
+        # self.close()
         
 
     def closeEvent(self, a0):
-        self.parent_window.show()
+        self.main_window.show()
         return super().closeEvent(a0)
 
-    def back(self):
-        self.parent_window.show()
-        self.close()
+    # def back(self):
+    #     self.main_window.show()
+    #     self.close()
 
     def see(self):
         entry = self.searchbar.text()
@@ -68,6 +63,6 @@ class search(QMainWindow):
             self.msg = message('Entry not found')
             self.msg.show()
             
-            self.close()
+            # self.close()
         
         

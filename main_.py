@@ -1,6 +1,5 @@
 import sys
 from PyQt5.QtWidgets import QApplication
-from pages.main_prompt_screen import MainWindow
 from pages.login import login_screen
 
 def main():

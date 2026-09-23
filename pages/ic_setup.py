@@ -1,16 +1,14 @@
-from PyQt5.QtWidgets import QMainWindow, QLabel, QWidget, QGridLayout, QLineEdit, QTextEdit, QComboBox, QPushButton
+from PyQt5.QtWidgets import QLabel, QWidget, QGridLayout, QLineEdit, QTextEdit, QComboBox, QPushButton
 import sqlite3
 import datetime
 from utils.message import message
 
-class ICSetup(QMainWindow):
-    def __init__(self, parent_window, function, role):
+class ICSetup(QWidget):
+    def __init__(self, main_window, function, role):
         super().__init__()
-        self.setWindowTitle('Investor Master')
-        self.setGeometry(360, 100, 1500, 900)
         self.function = function
         self.role = role
-        self.parent_window = parent_window
+        self.main_window = main_window
         self.initUI()
     
     def initUI(self):
@@ -38,9 +36,6 @@ class ICSetup(QMainWindow):
                            }
                            """)
 
-            
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
         
         grid = QGridLayout()
         grid.setHorizontalSpacing(10)
@@ -273,11 +268,11 @@ class ICSetup(QMainWindow):
         grid.addWidget(self.submitbutton_ic, 13, 6)
         grid.addWidget(self.cancelbutton, 13, 7)
 
-        central_widget.setLayout(grid)
+        self.setLayout(grid)
         
-    def back(self):
-        self.parent_window.show()
-        self.close()
+    # def back(self):
+    #     self.main_window.show()
+    #     self.close()
         
     def insert_ic(self):
         self.data = {
@@ -418,7 +413,7 @@ class ICSetup(QMainWindow):
             self.msg.show()
         finally:
             conn.close()
-            self.close()
+            # self.close()
         
     def update_ic(self):
         conn = sqlite3.connect('ifms.db')

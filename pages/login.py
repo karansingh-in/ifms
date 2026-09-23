@@ -1,16 +1,14 @@
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QLabel, QLineEdit, QWidget, QGridLayout
-from PyQt5.QtCore import Qt
-from pages.registration import registration_screen
 import sqlite3
 import bcrypt
 from utils.message import message
-from pages.main_prompt_screen import MainWindow
+from pages.dashboard import dashboard
 
 class login_screen(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Login')
-        self.setGeometry(550, 250, 900, 500)
+        self.setGeometry(600, 300, 810, 450)
         self.initUI()
     def initUI(self):
         
@@ -36,23 +34,9 @@ class login_screen(QMainWindow):
         self.password_text.setEchoMode(QLineEdit.Password)
         
         self.login_button = QPushButton('Login')
-        self.login_button.setMaximumWidth(100)
+        self.login_button.setMaximumWidth(150)
         self.login_button.clicked.connect(self.check_login)
-        
-        self.register_button = QPushButton('New User? Register here.')
-        self.register_button.setFlat(True)
-        self.register_button.setCursor(Qt.PointingHandCursor)
-        
-        self.register_button.clicked.connect(self.registration)
-        self.register_button.setStyleSheet("""
-                    QPushButton {
-                        color: #8C8C8C;
-                        background-color: #161616;
-                    }
-                    QPushButton:hover {
-                        color: #6bb8ff;
-                    }
-                    """)
+    
         grid = QGridLayout()
         
         central_widget = QWidget()
@@ -63,19 +47,13 @@ class login_screen(QMainWindow):
         grid.addWidget(password_label, 2, 0)
         grid.addWidget(self.password_text, 2, 1)
         grid.addWidget(self.login_button, 3, 1)
-        grid.addWidget(self.register_button, 4, 1)
         grid.addWidget(show_password_button, 2,2)
         
-        grid.setSpacing(3)
+        grid.setSpacing(14)
         grid.setContentsMargins(90,90,90,90)
         
         central_widget.setLayout(grid)
-        
-    def registration(self):
-        self.reg = registration_screen()
-        self.reg.show()
-        self.close()
-        
+             
     def toggle_password(self):
         if self.password_text.echoMode() == QLineEdit.Password :
             self.password_text.setEchoMode(QLineEdit.Normal)
@@ -113,11 +91,11 @@ class login_screen(QMainWindow):
         else:
             hased_password = row[0].encode('utf-8')
             if(bcrypt.checkpw(password=entered_password, hashed_password=hased_password)):
-                self.main_screen = MainWindow(role=self.role)
-                self.main_screen.show()
+                self.main_window = dashboard(user= self.username_text.text(), role=self.role)
+                self.main_window.show()
                 self.close()
-
-                print('it works')
+                
+                print('works')
                 
         conn.close()
         
